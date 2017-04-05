@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>first</title>
+	<script src="pixi.min.js"></script>
+	<style>*{padding:0;margin:0;}</style>
+</head>
+<body>
+	<script>
+		var type = "WebGL";
+		if(!PIXI.utils.isWebGLSupported()){
+			type = "canvas";
+		}
+		PIXI.utils.sayHello(type);
+		//简短命名
+		var Container = PIXI.Container,
+		    autoDetectRenderer = PIXI.autoDetectRenderer,
+		    loader = PIXI.loader,
+		    resources = PIXI.loader.resources,
+		    Sprite = PIXI.Sprite;
+		var renderer = PIXI.autoDetectRenderer(256,256);
+		document.body.appendChild(renderer.view);
+		var stage = new PIXI.Container();
+		//pixi内置loader对象加载图片
+		PIXI.loader.add(["images/sprite.png","images/sprite2.png","images/tileset.png"]).on("progress",loadProgress).load(setup);
+		function loadProgress(loader, res){
+			console.log("loading:" + res.url);
+			console.log("progress:" + loader.progress + "%");
+			console.log(res.name);
+		}
+		//在图片加载完成后以下函数执行
+		function setup(){
+			var zb = new PIXI.Sprite(
+				PIXI.loader.resources["images/sprite.png"].texture
+			);
+			var map = new PIXI.Sprite(
+				PIXI.loader.resources["images/tileset.png"].texture
+			);
+			var rectangle = new Rectangle(192,128,64,64);
+			map.frame = rectangle;
+			zb.position.set(78,78);
+			zb.scale.set(1,1);
+			
+			zb.rotation = 3.1415926;
+			zb.anchor.set(1,1);
+			stage.addChild(zb);
+			renderer.render(stage);
+
+		}
+
+		renderer.view.style.position = "absolute";
+		renderer.view.style.display = "block";
+		renderer.autoResize = true;
+		renderer.resize(256,256);
+	</script>
+</body>
+</html>
