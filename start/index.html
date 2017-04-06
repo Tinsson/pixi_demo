@@ -18,9 +18,11 @@
 		    autoDetectRenderer = PIXI.autoDetectRenderer,
 		    loader = PIXI.loader,
 		    resources = PIXI.loader.resources,
-		    TextureCache = PIXI.TextureCache;
-		    Rectangle = PIXI.Rectangle;
-		    Sprite = PIXI.Sprite;
+		    TextureCache = PIXI.TextureCache,
+		    Rectangle = PIXI.Rectangle,
+		    Sprite = PIXI.Sprite,
+		    ParticleContainer = PIXI.ParticleContainer,
+		    Text = PIXI.text;
 		var renderer = PIXI.autoDetectRenderer(256,256);
 		document.body.appendChild(renderer.view);
 		var stage = new PIXI.Container();
@@ -32,7 +34,7 @@
 			console.log(res.name);
 		}
 		//在图片加载完成后以下函数执行
-		var zb,state;
+		var zb,state,rocket;
 		function setup(){
 			zb = new Sprite(
 				PIXI.loader.resources["images/sprite.png"].texture
@@ -41,15 +43,16 @@
 			var texture = TextureCache["images/tileset.png"];
 			var rectangle = new Rectangle(192,128,64,64);
 			texture.frame = rectangle;
-			var rocket = new Sprite(texture);
+			rocket = new Sprite(texture);
 			rocket.position.set(10,90);
 			//初始化精灵的位置
-			zb.position.set(78,78+zb.height/2);
+			// zb.position.set(150,78+zb.height/2);
+			zb.position.set(78,78);
 			zb.vx = 0;//移动速度
 			zb.vy = 0;
-			zb.scale.set(1,1);
+			// zb.scale.set(1,1);
 			zb.rotation = 0;
-			zb.anchor.set(0.5,0.5);
+			// zb.anchor.set(0.5,0.5);
 			//捕捉键盘方向键
 			var left = keyboard(37),
 				up = keyboard(38),
@@ -107,7 +110,10 @@
 		function play(){
 			zb.x += zb.vx;
 			zb.y += zb.vy;
-			zb.rotation += 0.05;
+			
+			if(hitTestRectangle(zb,rocket)){
+				console.log("aaa");
+			}
 		}
 		function keyboard(keyCode){
 			var key = {};
@@ -137,6 +143,52 @@
 			window.addEventListener("keyup",key.upHandler.bind(key),false)
 			return key;
 		}
+		//碰撞判断函数
+		function hitTestRectangle(r1, r2) {
+		    //定义计算时需要使用到的变量
+		    var hit, combinedHalfWidths, combinedHalfHeight, vx, vy;
+
+		    //hit用于定义是否发生碰撞
+		    var hit = false;
+
+		    //计算两个精灵的中心点位置
+		    r1.centerX = r1.x + r1.width / 2;
+		    r1.centerY = r1.y + r1.height / 2;
+		    r2.centerX = r2.x + r2.width / 2;
+		    r2.centerY = r2.y + r2.height / 2;
+
+		    //计算两个精灵宽和高的二分之一
+		    r1.halfWidth = r1.width / 2;
+		    r1.halfHeight = r1.height / 2;
+		    r2.halfWidth = r2.width / 2;
+		    r2.halfHeight = r2.height / 2;
+
+		    //计算两个精灵中心点的距离
+		    vx = r1.centerX - r2.centerX;
+		    vy = r1.centerY - r2.centerY;
+
+		    //计算两个精灵宽和高各自的和
+		    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+		    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+		    //检测x方向上的碰撞
+		    if(Math.abs(vx) < combinedHalfWidths) {
+		        //碰撞可能发生，检测y方向上是否发生碰撞
+		        if(Math.abs(vy) < combinedHalfHeights) {
+		            //肯定发生了碰撞
+		            hit = true;
+		        } else {
+		            //y方向上没有发生碰撞
+		            hit = false;
+		        }
+		    } else {
+		        //x方向上没有发生碰撞
+		        hit = false;
+		    }
+
+		    //“hit”会返回“true”或“false”
+		    return hit;
+		};
 		renderer.view.style.position = "absolute";
 		renderer.view.style.display = "block";
 		renderer.autoResize = true;

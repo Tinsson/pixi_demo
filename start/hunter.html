@@ -8,11 +8,6 @@
 </head>
 <body>
 	<script>
-		var type = "WebGL";
-		if(!PIXI.utils.isWebGLSupported()){
-			type = "canvas";
-		}
-		PIXI.utils.sayHello(type);
 		//简短命名
 		var Container = PIXI.Container,
 		    autoDetectRenderer = PIXI.autoDetectRenderer,
@@ -21,7 +16,9 @@
 		    TextureCache = PIXI.TextureCache,
 		    Rectangle = PIXI.Rectangle,
 		    Sprite = PIXI.Sprite,
-		    Resources = PIXI.loader.resources;
+		    Resources = PIXI.loader.resources,
+		    ParticleContainer = PIXI.ParticleContainer,
+		    Text = PIXI.Text;
 
 		var renderer = autoDetectRenderer(512,512),
 			stage = new Container();
@@ -64,6 +61,12 @@
 				blob.position.set(x,y);
 				stage.addChild(blob);
 			}
+			var message = new Text(
+				"game start",
+				{fontFamily: "Microsoft YaHei", fontSize: 32, fill: "white"}
+			);
+			message.position.set(180,20);
+			stage.addChild(message);
 			renderer.render(stage);
 		}
 		function randomInt(min,max){
