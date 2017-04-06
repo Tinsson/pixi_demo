@@ -18,6 +18,8 @@
 		    autoDetectRenderer = PIXI.autoDetectRenderer,
 		    loader = PIXI.loader,
 		    resources = PIXI.loader.resources,
+		    TextureCache = PIXI.TextureCache;
+		    Rectangle = PIXI.Rectangle;
 		    Sprite = PIXI.Sprite;
 		var renderer = PIXI.autoDetectRenderer(256,256);
 		document.body.appendChild(renderer.view);
@@ -30,29 +32,114 @@
 			console.log(res.name);
 		}
 		//在图片加载完成后以下函数执行
+		var zb,state;
 		function setup(){
-			var zb = new PIXI.Sprite(
+			zb = new Sprite(
 				PIXI.loader.resources["images/sprite.png"].texture
 			);
-			var map = new PIXI.Sprite(
-				PIXI.loader.resources["images/tileset.png"].texture
-			);
+
+			var texture = TextureCache["images/tileset.png"];
 			var rectangle = new Rectangle(192,128,64,64);
-			map.frame = rectangle;
-			zb.position.set(78,78);
+			texture.frame = rectangle;
+			var rocket = new Sprite(texture);
+			rocket.position.set(10,90);
+			//初始化精灵的位置
+			zb.position.set(78,78+zb.height/2);
+			zb.vx = 0;//移动速度
+			zb.vy = 0;
 			zb.scale.set(1,1);
-			
-			zb.rotation = 3.1415926;
-			zb.anchor.set(1,1);
+			zb.rotation = 0;
+			zb.anchor.set(0.5,0.5);
+			//捕捉键盘方向键
+			var left = keyboard(37),
+				up = keyboard(38),
+				right = keyboard(39),
+				down = keyboard(40);
+			left.press = function(){
+				zb.vx = -1;
+				zb.vy = 0;
+			}
+			left.release = function(){
+				if(!right.isDown && zb.vy === 0){
+					zb.vx = 0;
+				}
+			}
+			up.press = function(){
+				zb.vy = -1;
+				zb.vx = 0;
+			}
+			up.release = function(){
+				if(!down.isDown && zb.vx === 0){
+					zb.vy = 0;
+				}
+			}
+			right.press = function(){
+				zb.vx = 1;
+				zb.vy = 0;
+			}
+			right.release = function(){
+				if(!left.isDown && zb.vy === 0){
+					zb.vx = 0;
+				}
+			}
+			down.press = function(){
+				zb.vx = 0;
+				zb.vy = 1;
+			}
+			down.release = function(){
+				if(!up.isDown && zb.vx === 0){
+					zb.vy = 0;
+				}
+			}
 			stage.addChild(zb);
-			renderer.render(stage);
-
+			stage.addChild(rocket);
+			state = play;
+			gameLoop(zb);
 		}
+		function gameLoop(){
+			if(zb.x == 200){
+				return false;
+			}
+			requestAnimationFrame(gameLoop);
+			state();
+			renderer.render(stage);
+		}
+		function play(){
+			zb.x += zb.vx;
+			zb.y += zb.vy;
+			zb.rotation += 0.05;
+		}
+		function keyboard(keyCode){
+			var key = {};
+			key.code = keyCode;
+			key.isDown = false;
+			key.isUp = true;
+			key.press = undefined;
+			key.release = undefined;
 
+			key.downHandler = function(event){
+				if(event.keyCode === key.code){
+					if(key.isUp && key.press) key.press();
+					key.isDown = true;
+					key.isUp = false;
+				}
+				event.preventDefault();
+			}
+			key.upHandler = function(event){
+				if(event.keyCode === key.code){
+					if(key.isDown && key.release) key.release();
+					key.isDown = false;
+					key.isUp = true;
+				}
+				event.preventDefault();
+			}
+			window.addEventListener("keydown",key.downHandler.bind(key),false)
+			window.addEventListener("keyup",key.upHandler.bind(key),false)
+			return key;
+		}
 		renderer.view.style.position = "absolute";
 		renderer.view.style.display = "block";
 		renderer.autoResize = true;
-		renderer.resize(256,256);
 	</script>
 </body>
 </html>
