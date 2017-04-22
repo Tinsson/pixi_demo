@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>first</title>
 	<script src="pixi.min.js"></script>
+	<script src="bump.js"></script>
 	<style>*{padding:0;margin:0;}</style>
 </head>
 <body>
@@ -111,8 +112,11 @@
 			zb.x += zb.vx;
 			zb.y += zb.vy;
 			
-			if(hitTestRectangle(zb,rocket)){
-				console.log("aaa");
+			// 碰撞插件
+		var bump = new Bump(PIXI);
+		bump.hit(zb,rocket);
+			if(bump.hit(zb,rocket)){
+				console.log(bump.hit(zb,rocket,true,true));
 			}
 		}
 		function keyboard(keyCode){
@@ -143,52 +147,6 @@
 			window.addEventListener("keyup",key.upHandler.bind(key),false)
 			return key;
 		}
-		//碰撞判断函数
-		function hitTestRectangle(r1, r2) {
-		    //定义计算时需要使用到的变量
-		    var hit, combinedHalfWidths, combinedHalfHeight, vx, vy;
-
-		    //hit用于定义是否发生碰撞
-		    var hit = false;
-
-		    //计算两个精灵的中心点位置
-		    r1.centerX = r1.x + r1.width / 2;
-		    r1.centerY = r1.y + r1.height / 2;
-		    r2.centerX = r2.x + r2.width / 2;
-		    r2.centerY = r2.y + r2.height / 2;
-
-		    //计算两个精灵宽和高的二分之一
-		    r1.halfWidth = r1.width / 2;
-		    r1.halfHeight = r1.height / 2;
-		    r2.halfWidth = r2.width / 2;
-		    r2.halfHeight = r2.height / 2;
-
-		    //计算两个精灵中心点的距离
-		    vx = r1.centerX - r2.centerX;
-		    vy = r1.centerY - r2.centerY;
-
-		    //计算两个精灵宽和高各自的和
-		    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
-		    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
-
-		    //检测x方向上的碰撞
-		    if(Math.abs(vx) < combinedHalfWidths) {
-		        //碰撞可能发生，检测y方向上是否发生碰撞
-		        if(Math.abs(vy) < combinedHalfHeights) {
-		            //肯定发生了碰撞
-		            hit = true;
-		        } else {
-		            //y方向上没有发生碰撞
-		            hit = false;
-		        }
-		    } else {
-		        //x方向上没有发生碰撞
-		        hit = false;
-		    }
-
-		    //“hit”会返回“true”或“false”
-		    return hit;
-		};
 		renderer.view.style.position = "absolute";
 		renderer.view.style.display = "block";
 		renderer.autoResize = true;

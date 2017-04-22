@@ -30,7 +30,7 @@
 
 		//在图片加载完成后以下函数执行
 		function setup(){
-			//直接使用“TextureCache”
+			//直接使用TextureCache
 			var dungeonTexture = TextureCache["dungeon.png"];
 			var dungeon = new Sprite(dungeonTexture);
 			stage.addChild(dungeon);
@@ -71,6 +71,15 @@
 		}
 		function randomInt(min,max){
 			return Math.floor(Math.random()*(max - min + 1)) + min
+		}
+		function gameLoop(){
+			//在当前游戏状态state中执行循环渲染精灵
+		}
+		function play(){
+			//所有游戏逻辑
+		}
+		function end(){
+			//游戏结束时运行的内容
 		}
 	</script>
 </body>
